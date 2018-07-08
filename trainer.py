@@ -98,7 +98,7 @@ with tf.Session() as sess:
                     if i.tolist().index(np.max(i))==ys[idx].tolist().index(np.max(ys[idx])):
                         r+=1
                     a+=1
-        if ss >0.8 or r/a>0.9:
+        if ss >0.8 or r/a>0.75:
             saver.save(sess, './model/model.ckpt')
             ob+=1
         try:
