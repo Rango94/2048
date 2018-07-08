@@ -102,7 +102,7 @@ with tf.Session() as sess:
             saver.save(sess, './model/model.ckpt')
             ob+=1
         try:
-            print(batchs[0], ss,r/a)
+            print(batchs[len(batchs)-1], ss,r/a)
         except:
             print(batchs,ss,r/a)
 
