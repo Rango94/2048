@@ -4,39 +4,39 @@ import random as rd
 import Map
 import math
 
-def generate_data(y,times):
+def generate_data(y,pro):
     size=10000
     maps=[]
     for i in range(size):
         maps.append(Map.map())
 
-    for i in range(int(math.pow(2,times))):
+    while len(maps)>size/100:
         batch_x=[]
         for i in maps:
             batch_x.append(i.get_vector())
-        if times<=3:
-            y__=[rd.randint(0,3) for i in range(len(batch_x))]
-
-        else:
-            y__=[i.tolist().index(np.max(i)) for i in sess.run(y, feed_dict={x:np.array(batch_x)})]
-        # print(y__)
-        # print(sess.run(w1))
+        y__=[i.tolist().index(np.max(i)) for i in sess.run(y, feed_dict={x:np.array(batch_x)})]
+        for idx,i in enumerate(y__):
+            if rd.random()<pro:
+                y__[idx]=rd.randint(0,3)
         idx=0
         while idx <len(y__):
             move=maps[idx].move(y__[idx])
             if move:
                 maps.pop(idx)
                 y__.pop(idx)
+                if len(maps)<size/100:
+                    break
             else:
                 idx+=1
     out=[]
-    r=0
+    max_=0
     for map in maps:
-        if map.get_max() >= object_[times]:
-            r+=1
+        if map.get_max() >max_:
+            max_=map.get_max()
+    for map in maps:
+        if map.get_max()==max_:
             out.append(map.get_history())
-
-    return out,r/len(maps)
+    return out,max_
 
 def dropout(batchs):
     for idx in range(len(batchs)):
@@ -78,33 +78,34 @@ loss=tf.nn.softmax_cross_entropy_with_logits_v2(logits=y,labels=y_)
 train_step=tf.train.AdadeltaOptimizer(1).minimize(loss)
 saver=tf.train.Saver()
 
-object_={}
-for i in range(1,12):
-    object_[i]=math.pow(2,i+1)
+# object_={}
+# for i in range(1,12):
+#     object_[i]=math.pow(2,i+1)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    ob=1
-    r = 0
-    a = 0
+    pro=1
+    last_max=0
     while True:
-        batchs,ss=generate_data(y,ob)
+        batchs,max_=generate_data(y,pro)
         # batchs=dropout(batchs)
         for xs,ys in batchs:
             sess.run(train_step,feed_dict={x:xs,y_:ys})
-            if ob<=3:
-                y__=sess.run(y,feed_dict={x:xs})
-                for idx,i in enumerate(y__):
-                    if i.tolist().index(np.max(i))==ys[idx].tolist().index(np.max(ys[idx])):
-                        r+=1
-                    a+=1
-        if ss >0.8 or r/a>0.50:
-            saver.save(sess, './model/model.ckpt')
-            ob+=1
+            # if ob<=3:
+            #     y__=sess.run(y,feed_dict={x:xs})
+            #     for idx,i in enumerate(y__):
+            #         if i.tolist().index(np.max(i))==ys[idx].tolist().index(np.max(ys[idx])):
+            #             r+=1
+            #         a+=1
+        if max_>last_max :
+            if last_max!=0:
+                saver.save(sess, './model/model.ckpt')
+                pro-=0.1
+            last_max=max_
         try:
-            print(batchs[len(batchs)-1], ss,r/a,ob)
+            print(batchs[len(batchs)-1], max_)
         except:
-            print(batchs,ss,r/a)
+            print(batchs,max_)
 
 
 
