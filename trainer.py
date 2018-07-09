@@ -5,7 +5,7 @@ import Map
 import math
 
 def generate_data(y,pro):
-    size=10000
+    size=1000
     maps=[]
     for i in range(size):
         maps.append(Map.map())
@@ -84,7 +84,7 @@ saver=tf.train.Saver()
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    pro=1
+    pro=0.5
     last_max=0
     while True:
         batchs,max_=generate_data(y,pro)

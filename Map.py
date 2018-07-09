@@ -2,9 +2,10 @@ import numpy as np
 import random as rd
 
 class map:
-    def __init__(self):
+    def __init__(self,seed):
         self.Matrix=np.zeros((4,4))
-        self.Matrix[rd.randint(0,3),rd.randint(0,3)]=2
+        self.seed=seed
+        self.Matrix[self.get_random(0,3),self.get_random(0,3)]=2
         self.history_vector=[]
         self.history_step = []
     def move_right(self):
@@ -21,8 +22,8 @@ class map:
             self.Matrix[i,4-len(tmp):4]=np.array(tmp)
             self.Matrix[i,0:4 - len(tmp)] = 0
         while True:
-            rd1=rd.randint(0, 3)
-            rd2=rd.randint(0, 3)
+            rd1=self.get_random(0,3)
+            rd2=self.get_random(0,3)
             if self.Matrix[rd1,rd2 ] == 0:
                 self.Matrix[rd1,rd2 ]=2
                 break
@@ -43,8 +44,8 @@ class map:
             self.Matrix[i,len(tmp):4]=0
             self.Matrix[i,0:len(tmp)] = np.array(tmp)
         while True:
-            rd1=rd.randint(0, 3)
-            rd2=rd.randint(0, 3)
+            rd1=self.get_random(0,3)
+            rd2=self.get_random(0,3)
             if self.Matrix[rd1,rd2 ] == 0:
                 self.Matrix[rd1,rd2 ]=2
                 break
@@ -66,8 +67,8 @@ class map:
             self.Matrix[4-len(tmp):4,i]=np.array(tmp)
             self.Matrix[0:4 - len(tmp),i] = 0
         while True:
-            rd1=rd.randint(0, 3)
-            rd2=rd.randint(0, 3)
+            rd1=self.get_random(0,3)
+            rd2=self.get_random(0,3)
             if self.Matrix[rd1,rd2 ] == 0:
                 self.Matrix[rd1,rd2 ]=2
                 break
@@ -89,8 +90,8 @@ class map:
             self.Matrix[len(tmp):4,i] = 0
             self.Matrix[0:len(tmp),i] = np.array(tmp)
         while True:
-            rd1=rd.randint(0, 3)
-            rd2=rd.randint(0, 3)
+            rd1=self.get_random(0,3)
+            rd2=self.get_random(0,3)
             if self.Matrix[rd1,rd2 ] == 0:
                 self.Matrix[rd1,rd2 ]=2
                 break
@@ -130,3 +131,10 @@ class map:
 
     def get_max(self):
         return np.max(self.Matrix)
+
+
+    def get_random(self,min,max):
+        rd.seed(self.seed)
+        out=rd.randint(min,max)
+        self.seed=out
+        return out
